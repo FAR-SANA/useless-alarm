@@ -1,590 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Wake Up! Alarm Clock</title>
-    <link rel="icon" href="https://lh4.ggpht.com/1udF0HDha4jFIAD7EKLGdPIaNdGAVycX1kXuC7d5pI20INx_GdhEdMKLK5ePRNeo0SE">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom responsive styles (kept from you) */
-        @media (max-width: 640px) {
-            .alarm-buttons { flex-direction: column; gap: 0.75rem; }
-            .alarm-input-group { flex-direction: column; align-items: stretch; gap: 0.75rem; }
-            .ringing-buttons { flex-direction: column; gap: 0.75rem; width: 100%; }
-            .ringing-buttons button { width: 100%; padding: 1rem 1.5rem; font-size: 1rem; }
-            .main-container { margin: 0.5rem; padding: 1.5rem; }
-        }
-        @media (max-width: 480px) {
-            .main-container { padding: 1rem; margin: 0.25rem; border-radius: 1.5rem; }
-            .time-display { font-size: 2.5rem !important; line-height: 1.1; }
-            .title { font-size: 2rem !important; }
-            .alarm-input-group input { padding: 1rem; font-size: 1.1rem; }
-            .alarm-buttons button { padding: 1rem 1.5rem; font-size: 1rem; }
-            .ringing-buttons button { padding: 0.875rem 1.25rem; font-size: 0.9rem; border-radius: 0.75rem; }
-            .mode-display { font-size: 1.75rem !important; }
-            .mode-text { font-size: 0.75rem; }
-        }
-        @media (max-width: 360px) {
-            .main-container { padding: 0.75rem; margin: 0.125rem; }
-            .time-display { font-size: 2rem !important; }
-            .title { font-size: 1.75rem !important; }
-            .mode-display { font-size: 1.5rem !important; }
-        }
-        button { transition: all 0.2s ease-in-out; min-height: 44px; }
-        button:active { transform: scale(0.98); }
-        @media (pointer: coarse) {
-            .ringing-buttons { gap: 1rem; }
-            .ringing-buttons button { min-height: 48px; padding: 1rem 1.5rem; }
-        }
-        button:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
-        input:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
-
-        /* small visual for keyboard challenge */
-        .challenge-box { background: rgba(99,102,241,0.06); padding: 0.5rem 1rem; border-radius: 0.75rem; display:inline-flex; gap:0.5rem; align-items:center; }
-        .challenge-key { font-weight:700; padding:0.35rem 0.55rem; border-radius:0.5rem; background:white; box-shadow:0 1px 0 rgba(0,0,0,0.04); min-width:36px; text-align:center; }
-        .countdown { font-weight:600; }
-    </style>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WakeUpWarrior Alarm</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: black;
+      --text: #ff1a1a;
+      --input-border: #ff4444;
+      --button-text: #ff4444;
+    }
+    body.light {
+      --bg: #f0f0f0; --text: #222; --input-border: #444; --button-text: #222;
+    }
+    html,body {
+      margin:0; padding:0; height:100%; overflow:hidden;
+      font-family:'Share Tech Mono',monospace;
+      background-color:var(--bg); color:var(--text);
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      transition:background-color 0.3s,color 0.3s;
+    }
+    #logo-header { position:absolute; top:10px; left:10px; display:flex; align-items:center; }
+    #logo{width:40px;height:40px; background:url('https://via.placeholder.com/40') no-repeat center/contain; margin-right:8px;}
+    #appName { font-size:1.3rem; font-weight:bold; }
+    #themeBtn{position:absolute; top:10px; right:10px; padding:5px 8px;font-size:1rem;
+             border:2px solid var(--input-border); background:transparent; color:var(--button-text); cursor:pointer;}
+    #clock{font-size:12vw; letter-spacing:.15em; font-weight:bold; text-align:center;}
+    .controls{margin-top:20px; font-size:1.5rem;}
+    input[type="time"]{
+      font-size:1.2rem; padding:6px; border:2px solid var(--input-border);
+      border-radius:4px; background:var(--bg); color:var(--button-text);
+    }
+    #stopInfo{margin-top:15px; font-size:1rem; text-align:center;}
+    #clapCountDisplay { margin-top: 10px; font-size: 1.2rem; }
+    button {
+      margin: 10px 5px 0 5px;
+      padding: 8px 14px;
+      font-size: 1.1rem;
+      border: 2px solid var(--input-border);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--button-text);
+      cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      user-select: none;
+    }
+    button:hover {
+      background-color: var(--input-border);
+      color: var(--bg);
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 text-gray-900 flex items-center justify-center p-4 font-sans antialiased">
-    <div class="main-container w-full max-w-2xl mx-auto bg-white rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-6 lg:p-10 flex flex-col items-center space-y-4 sm:space-y-6 lg:space-y-10 border border-gray-100 backdrop-filter backdrop-blur-md bg-opacity-80">
-        <h1 class="title text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-blue-600 drop-shadow-md text-center">Wake Up!</h1>
-        <div id="current-time" class="time-display text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-light tracking-wide text-gray-800 drop-shadow-sm text-center">12:00:00 AM</div>
+<body>
+  <div id="logo-header"><div id="logo"></div><div id="appName">WakeUpWarrior</div></div>
+  <button id="themeBtn">Toggle Theme</button>
+  <div id="clock">00:00:00</div>
+  <div class="controls">
+    Set Alarm: <input type="time" id="alarmTime"/>
+  </div>
+  <div>
+    <button id="useClap">Use Clap to Stop</button>
+    <button id="useKeys">Use Keyboard to Stop</button>
+  </div>
+  <div id="stopInfo">
+    Clap 10 times ⬇ or type letters: <span id="keysNeeded">---</span>
+  </div>
+  <div id="clapCountDisplay">Claps: 0</div>
 
-        <div id="alarm-section" class="w-full flex flex-col items-center space-y-4 sm:space-y-6 lg:space-y-8">
-            <p id="alarm-set-message" class="text-sm sm:text-base lg:text-lg text-gray-600 font-medium text-center px-2">Set an alarm to wake up</p>
-            <div class="alarm-input-group flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full max-w-lg">
-                <input id="alarm-time" type="time" class="w-full sm:w-auto bg-gray-100 text-gray-800 text-base sm:text-lg p-3 sm:p-4 rounded-xl border-2 border-gray-200 focus:outline-none focus:border-blue-500 transition duration-300 shadow-inner min-h-[44px]" />
-                <div class="alarm-buttons flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
-                    <button id="set-alarm-btn" class="w-full sm:w-auto py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold shadow-lg hover:from-blue-600 hover:to-indigo-700 transition duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 min-h-[44px]">
-                        <span class="text-sm sm:text-base">Set Alarm</span>
-                    </button>
-                    <button id="clear-alarm-btn" style="display:none" class="w-full sm:w-auto py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-full bg-gradient-to-r from-red-500 to-pink-600 text-white font-bold shadow-lg hover:from-red-600 hover:to-pink-700 transition duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 min-h-[44px]">
-                        <span class="text-sm sm:text-base">Clear Alarm</span>
-                    </button>
-                </div>
-            </div>
-            <div id="status-message" class="h-6 text-green-600 font-semibold text-center text-xs sm:text-sm lg:text-base px-2"></div>
-        </div>
+  <script>
+    const clockEl = document.getElementById('clock');
+    const alarmInput = document.getElementById('alarmTime');
+    const keysNeeded = document.getElementById('keysNeeded');
+    const themeBtn = document.getElementById('themeBtn');
+    const useClapBtn = document.getElementById('useClap');
+    const useKeysBtn = document.getElementById('useKeys');
+    const clapCountDisplay = document.getElementById('clapCountDisplay');
 
-        <div id="ringing-section" style="display:none" class="w-full flex flex-col items-center space-y-4 sm:space-y-6">
-            <div class="animate-pulse text-red-500 flex items-center space-x-2 text-base sm:text-lg lg:text-xl font-bold">
-                <span class="text-lg sm:text-xl">🔔</span>
-                <span>ALARM RINGING!</span>
-            </div>
+    let alarmTime = null, ringing = false;
+    let clapCount = 0, clapGoal = 10;
+    let stopKeys = [], keyGoal = 4;
+    let keyTimer = null, freqRampTimeout = null;
+    let audioCtx = null, oscillator = null;
+    let useClap = true;
+    let volume = 0.1;
 
-            <!-- Clap mode UI -->
-            <div id="clap-detection-mode" class="w-full">
-                <div class="mode-display text-xl sm:text-2xl lg:text-4xl font-extrabold text-indigo-500 flex items-center justify-center space-x-2 sm:space-x-3">
-                    <span class="text-2xl sm:text-3xl lg:text-4xl">👏</span>
-                    <span id="clap-count">0 / 10 Claps</span>
-                </div>
-                <p id="ringing-status" class="mode-text text-xs sm:text-sm text-gray-600 font-medium text-center mt-2 px-2">Clap 10 times to turn off the alarm!</p>
-            </div>
+    // Update clock and theme based on time
+    function updateTime() {
+      const now = new Date();
+      const h = now.getHours().toString().padStart(2,'0');
+      const m = now.getMinutes().toString().padStart(2,'0');
+      const s = now.getSeconds().toString().padStart(2,'0');
+      clockEl.textContent = `${h}:${m}:${s}`;
 
-            <!-- Keyboard challenge UI -->
-            <div id="laptop-mode" style="display:none" class="w-full text-center">
-                <div class="mode-display text-xl sm:text-2xl lg:text-4xl font-extrabold text-purple-500 flex items-center justify-center space-x-2 sm:space-x-3">
-                    <span class="text-2xl sm:text-3xl lg:text-4xl">⌨</span>
-                    <span id="key-count">0 / 1 Challenges</span>
-                </div>
-                <p class="mode-text text-xs sm:text-sm text-gray-600 font-medium mt-2 px-2">Type the random key sequence shown fast enough to lower the alarm intensity.</p>
+      // Auto theme based on hour
+      if (h >= 7 && h < 19) {
+        if (!document.body.classList.contains('light')) document.body.classList.add('light');
+      } else {
+        if (document.body.classList.contains('light')) document.body.classList.remove('light');
+      }
 
-                <div class="mt-3">
-                    <div id="challenge-display" class="challenge-box" aria-live="polite" role="status">
-                        <!-- keys will be injected here -->
-                        <span id="challenge-keys" class="flex gap-2"></span>
-                        <span id="challenge-timer" class="ml-3 countdown text-sm text-gray-700"> </span>
-                    </div>
-                </div>
-            </div>
+      if (alarmTime === `${h}:${m}` && !ringing) startAlarm();
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
 
-            <div class="ringing-buttons flex flex-col sm:grid sm:grid-cols-2 lg:flex lg:flex-row items-center gap-3 sm:gap-4 w-full sm:max-w-2xl">
-                <button id="mute-btn" class="w-full lg:w-auto py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold shadow-lg hover:from-yellow-500 hover:to-orange-600 transition duration-300 transform hover:scale-105 min-h-[44px]">
-                    <span class="text-sm sm:text-base">Mute</span>
-                </button>
-                <button id="manual-clap-btn" class="w-full lg:w-auto py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold shadow-md hover:from-green-500 hover:to-blue-600 transition duration-300 transform hover:scale-105 min-h-[44px]">
-                    <span class="text-sm sm:text-base">Manual Clap</span>
-                </button>
-                <button id="switch-mode-btn" class="w-full lg:w-auto py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-full bg-gradient-to-r from-purple-400 to-pink-500 text-white font-semibold shadow-md hover:from-purple-500 hover:to-pink-600 transition duration-300 transform hover:scale-105 min-h-[44px]">
-                    <span class="text-sm sm:text-base">Switch Mode</span>
-                </button>
-                <button id="stop-alarm-btn" class="w-full lg:w-auto py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-full bg-gradient-to-r from-gray-500 to-gray-600 text-white font-semibold shadow-md hover:from-gray-600 hover:to-gray-700 transition duration-300 transform hover:scale-105 min-h-[44px]">
-                    <span class="text-sm sm:text-base">Stop Alarm</span>
-                </button>
-            </div>
-        </div>
-    </div>
+    alarmInput.addEventListener('input', () => {
+      alarmTime = alarmInput.value;
+      if (alarmTime) alert(`Alarm set for ${alarmTime}`);
+    });
 
-    <script>
-        // Variables (kept many from original)
-        let alarmTime = '';
-        let isAlarmSet = false;
-        let isAlarmRinging = false;
-        let clapCount = 0;
-        let keyPressCount = 0;
-        let isMute = false;
-        let alarmInterval = null;
-        let jokeTimeout = null;
-        let audioStream = null;
-        let audioContext = null;
-        let analyser = null;
-        let lastClapTime = 0;
-        let lastKeyPressTime = 0;
-        let isLaptopMode = false;
-        let isClapMode = true;
+    useClapBtn.onclick = () => {
+      useClap = true;
+      alert('You selected: Clap to stop alarm');
+      resetStopInfo();
+    };
 
-        // --- NEW: keyboard-challenge vars ---
-        let requiredKeys = [];           // sequence user must type (e.g. ['a','s','d'])
-        let currentKeyIndex = 0;
-        let perKeyTimeLimit = 2500;      // ms to press each key initially
-        let keyTimer = null;             // countdown timer for each key
-        let countdownInterval = null;
-        let challengeCount = 0;          // how many successful sequences
-        const MAX_CHALLENGES_TO_DISMISS = 1; // number of sequences required to reduce intensity enough (configurable)
+    useKeysBtn.onclick = () => {
+      useClap = false;
+      alert('You selected: Keyboard to stop alarm');
+      resetStopInfo();
+    };
 
-        // --- NEW: alarm intensity control ---
-        let alarmBeepInterval = 500;     // ms between beeps
-        let alarmFrequency = 440;        // base frequency (Hz)
-        function resetAlarmIntensity() {
-            alarmBeepInterval = 500;
-            alarmFrequency = 440;
-        }
-        function increaseAlarmIntensity() {
-            // make beep faster and higher pitch
-            alarmBeepInterval = Math.max(100, alarmBeepInterval - 100);
-            alarmFrequency += 80;
-            // if alarm is playing, restart with new settings
-            if (!isMute && isAlarmRinging) {
-                stopAlarmSound();
-                playAlarmSound();
-            }
-            // feedback to user
-            const statusEl = document.getElementById('ringing-status');
-            if (statusEl) {
-                statusEl.textContent = `Too slow! Alarm intensifying... (freq ${alarmFrequency}Hz)`;
-            }
-        }
+    function startAlarm() {
+      ringing = true;
+      clapCount = 0;
+      volume = 0.1;
+      generateKeys();
+      updateClapCount();
+      updateStatus();
+      startAlarmSound();
+      if(useClap) setupClapDetection();
+      else stopClapDetection();
+      if (!useClap) setupKeyDetection();
+      else stopKeyDetection();
+    }
 
-        // --- Time formatting & update ---
-        function formatTime(date) {
-            let hours = date.getHours();
-            let minutes = date.getMinutes();
-            let seconds = date.getSeconds();
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            seconds = seconds < 10 ? '0' + seconds : seconds;
-            return hours + ':' + minutes + ':' + seconds + ' ' + ampm;
-        }
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('current-time').textContent = formatTime(now);
+    function stopAlarm() {
+      ringing = false;
+      stopAlarmSound();
+      clearInterval(keyTimer);
+      clearTimeout(freqRampTimeout);
+      keysNeeded.textContent = '---';
+      updateClapCount();
+      stopClapDetection();
+      stopKeyDetection();
 
-            if (isAlarmSet && alarmTime) {
-                const [hours, minutes] = alarmTime.split(':');
-                if (
-                    now.getHours() === parseInt(hours, 10) &&
-                    now.getMinutes() === parseInt(minutes, 10) &&
-                    now.getSeconds() === 0
-                ) {
-                    startAlarm();
-                }
-            }
-        }
+      const quotes = [
+        "Wake up! The early bird might get the worm, but the second mouse gets the cheese!",
+        "You can't snooze forever — eventually, the universe calls.",
+        "Rise and shine? More like rise and whine!",
+        "Sleep is overrated… said no one ever.",
+        "If you’re reading this, you’re awake. Congratulations!",
+        "Good morning! Time to pretend you’re a functioning adult.",
+        "Alarm clocks: Because reality won’t wait for you to be ready.",
+        "Getting up early is a sign of wisdom… or insanity."
+      ];
+      const quote = quotes[Math.floor(Math.random() * quotes.length)];
+      alert(`Alarm stopped! Now get up!\n\n💡 Here's a quote for you:\n${quote}`);
+    }
 
-        // --- Start / stop alarm ---
-        function startAlarm() {
-            isAlarmRinging = true;
-            clapCount = 0;
-            keyPressCount = 0;
-            resetAlarmIntensity();
-            challengeCount = 0;
+    function updateClapCount() {
+      clapCountDisplay.textContent = `Claps: ${clapCount}`;
+    }
 
-            const isLargeScreen = window.innerWidth >= 1024;
-            isLaptopMode = isLargeScreen;
+    function generateKeys() {
+      const pool = 'asdfjklghzxcvb';
+      stopKeys = [];
+      while (stopKeys.length < keyGoal) {
+        const k = pool[Math.floor(Math.random() * pool.length)];
+        if (!stopKeys.includes(k)) stopKeys.push(k);
+      }
+      updateStatus();
+      if (keyTimer) clearInterval(keyTimer);
+      keyTimer = setInterval(generateKeys, 5000);
+    }
 
-            document.getElementById('alarm-section').style.display = 'none';
-            document.getElementById('ringing-section').style.display = '';
+    function updateStatus() {
+      if (useClap) {
+        document.getElementById('stopInfo').firstChild.textContent = `Clap ${clapGoal - clapCount} more times to stop alarm.`;
+        keysNeeded.textContent = 'N/A';
+      } else {
+        document.getElementById('stopInfo').firstChild.textContent = 'Type letters to stop alarm: ';
+        keysNeeded.textContent = stopKeys.join(', ');
+      }
+    }
 
-            if (isLaptopMode) {
-                switchToKeyboardMode();
-            } else {
-                switchToClapMode();
-            }
+    // Clap detection
+    let micStream = null;
+    let audioContext = null;
+    let analyser = null;
+    let dataArray = null;
+    let clapDetectionRunning = false;
 
-            playAlarmSound();
+    async function setupClapDetection() {
+      if (clapDetectionRunning) return;
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const mic = audioContext.createMediaStreamSource(micStream);
+        analyser = audioContext.createAnalyser();
+        mic.connect(analyser);
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+        clapDetectionRunning = true;
+        detectClap();
+      } catch (e) {
+        alert('Microphone access denied or not available.');
+        useClap = false;
+        updateStatus();
+        stopClapDetection();
+      }
+    }
 
-            if (isClapMode) {
-                startClapDetection();
-            }
+    function stopClapDetection() {
+      clapDetectionRunning = false;
+      if (micStream) {
+        micStream.getTracks().forEach(track => track.stop());
+        micStream = null;
+      }
+      if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+      }
+    }
 
-            // Keyboard listener (handles our challenge)
-            document.addEventListener('keydown', handleKeyPress);
+    function detectClap() {
+      if (!clapDetectionRunning) return;
+      analyser.getByteFrequencyData(dataArray);
+      let avg = dataArray.reduce((a,b) => a+b, 0) / dataArray.length;
+      if (avg > 90 && ringing) {
+        clapCount++;
+        updateClapCount();
+        checkStop();
+      }
+      requestAnimationFrame(detectClap);
+    }
 
-            jokeTimeout = setTimeout(() => {
-                const statusEl = document.getElementById('ringing-status');
-                if (statusEl) {
-                    statusEl.textContent = isLaptopMode ?
-                        "Wake up! Complete the key sequence!" :
-                        "You lazy fellow, clap louder!";
-                }
-            }, 30000);
+    // Keyboard detection
+    function setupKeyDetection() {
+      document.addEventListener('keydown', keyDownHandler);
+    }
+    function stopKeyDetection() {
+      document.removeEventListener('keydown', keyDownHandler);
+    }
+    function keyDownHandler(e) {
+      if (!ringing || useClap) return;
+      const idx = stopKeys.indexOf(e.key);
+      if (idx > -1) {
+        stopKeys.splice(idx, 1);
+        updateStatus();
+        checkStop();
+      }
+    }
 
-            // Immediately generate and start first keyboard challenge if keyboard mode
-            if (isLaptopMode && !isClapMode) {
-                beginKeyboardChallenge();
-            }
-        }
+    // Alarm sound with rising frequency
+    let freq = 440;
+    let freqIncrement = 20;
+    let maxFreq = 2000;
 
-        function stopAlarm() {
-            isAlarmRinging = false;
-            isAlarmSet = false;
-            clapCount = 0;
-            keyPressCount = 0;
-            document.getElementById('alarm-section').style.display = '';
-            document.getElementById('ringing-section').style.display = 'none';
-            document.getElementById('status-message').textContent = 'Alarm dismissed! Good morning!';
-            stopAlarmSound();
-            stopClapDetection();
-            document.removeEventListener('keydown', handleKeyPress);
-            clearTimeout(jokeTimeout);
-            clearKeyTimer();
-            resetAlarmIntensity();
-        }
+    function startAlarmSound() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      oscillator = audioCtx.createOscillator();
+      oscillator.type = 'square';
+      oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      oscillator.connect(audioCtx.destination);
+      oscillator.start();
+      volume = 0.1;
+      rampFrequency();
+    }
 
-        // --- Alarm sound (kept simple beep logic but made responsive to intensity vars) ---
-        function playAlarmSound() {
-            if (isMute) return;
-            stopAlarmSound(); // ensure single interval
-            alarmInterval = setInterval(() => {
-                // beep using WebAudio each time (short-lived)
-                try {
-                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                    const oscillator = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    oscillator.type = 'sine';
-                    oscillator.frequency.value = alarmFrequency;
-                    gain.gain.value = 0.12; // short moderate volume
-                    oscillator.connect(gain);
-                    gain.connect(ctx.destination);
-                    oscillator.start();
-                    setTimeout(() => {
-                        oscillator.stop();
-                        ctx.close();
-                    }, 160); // beep duration
-                } catch (e) {
-                    // fallback: do nothing if audio unavailable
-                    console.warn('AudioContext error', e);
-                }
-            }, alarmBeepInterval);
-        }
+    function rampFrequency() {
+      if (!ringing) return;
+      freq += freqIncrement;
+      if (freq > maxFreq) freq = 440;
+      oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      freqRampTimeout = setTimeout(rampFrequency, 2000);
+    }
 
-        function stopAlarmSound() {
-            clearInterval(alarmInterval);
-            alarmInterval = null;
-        }
+    function stopAlarmSound() {
+      if (oscillator) {
+        oscillator.stop();
+        oscillator.disconnect();
+        oscillator = null;
+      }
+      if (audioCtx) {
+        audioCtx.close();
+        audioCtx = null;
+      }
+    }
 
-        // --- Clap detection (unchanged majorly) ---
-        function startClapDetection() {
-            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                audioStream = stream;
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const source = audioContext.createMediaStreamSource(stream);
-                analyser = audioContext.createAnalyser();
-                source.connect(analyser);
-                analyser.fftSize = 512;
-                analyser.smoothingTimeConstant = 0.3;
-                const bufferLength = analyser.frequencyBinCount;
-                const dataArray = new Uint8Array(bufferLength);
-                let previousAverage = 0;
-                let clapThreshold = 50;
+    function checkStop() {
+      if (useClap && clapCount >= clapGoal) stopAlarm();
+      if (!useClap && stopKeys.length === 0) stopAlarm();
+    }
 
-                function detectClap() {
-                    analyser.getByteFrequencyData(dataArray);
-                    const average = dataArray.reduce((acc, val) => acc + val, 0) / bufferLength;
-                    const volumeSpike = average - previousAverage;
-                    const now = Date.now();
-
-                    if (volumeSpike > clapThreshold && average > 30 && (now - lastClapTime) > 300) {
-                        clapCount++;
-                        document.getElementById('clap-count').textContent = clapCount + ' / 10 Claps';
-                        const statusEl = document.getElementById('ringing-status');
-                        if (statusEl) {
-                            statusEl.textContent = 'Great! Keep clapping... ' + (10 - clapCount) + ' more to go!';
-                        }
-
-                        const clapCountEl = document.getElementById('clap-count');
-                        clapCountEl.style.color = '#10b981';
-                        setTimeout(() => { clapCountEl.style.color = '#6366f1'; }, 200);
-
-                        if (clapCount >= 10) { stopAlarm(); return; }
-                        lastClapTime = now;
-                        if (clapCount === 1) clapThreshold = Math.max(30, clapThreshold * 0.8);
-                    }
-
-                    previousAverage = average;
-                    if (isAlarmRinging && isClapMode) requestAnimationFrame(detectClap);
-                }
-
-                const statusEl = document.getElementById('ringing-status');
-                if (statusEl) statusEl.textContent = 'Microphone ready! Clap loudly 10 times to stop the alarm!';
-                requestAnimationFrame(detectClap);
-            }).catch(() => {
-                const statusEl = document.getElementById('ringing-status');
-                if (statusEl) statusEl.textContent = 'Microphone access denied. Use manual controls or switch to keyboard mode.';
-                setTimeout(() => { if (isAlarmRinging) switchToKeyboardMode(); }, 2000);
-            });
-        }
-        function stopClapDetection() {
-            if (audioStream) { audioStream.getTracks().forEach(track => track.stop()); audioStream = null; }
-            if (audioContext) { audioContext.close(); audioContext = null; }
-        }
-
-        // --- Keyboard mode & challenge logic ---
-        function switchToClapMode() {
-            isClapMode = true;
-            document.getElementById('clap-detection-mode').style.display = '';
-            document.getElementById('laptop-mode').style.display = 'none';
-            document.getElementById('clap-count').textContent = clapCount + ' / 10 Claps';
-            document.getElementById('switch-mode-btn').textContent = 'Keyboard Mode';
-            if (isAlarmRinging && !audioStream) startClapDetection();
-            clearKeyTimer();
-        }
-
-        function switchToKeyboardMode() {
-            isClapMode = false;
-            document.getElementById('clap-detection-mode').style.display = 'none';
-            document.getElementById('laptop-mode').style.display = '';
-            document.getElementById('key-count').textContent = challengeCount + ' / ' + MAX_CHALLENGES_TO_DISMISS + ' Challenges';
-            document.getElementById('switch-mode-btn').textContent = 'Clap Mode';
-            if (audioStream) stopClapDetection();
-            beginKeyboardChallenge();
-        }
-
-        function randomKey() {
-            // choose from letters/numbers/some easy symbols (lowercase)
-            const pool = 'asdfghjklqwertyuiopzxcvbnm1234567890';
-            return pool.charAt(Math.floor(Math.random() * pool.length));
-        }
-
-        function generateKeySequence(length = 3) {
-            const arr = [];
-            for (let i = 0; i < length; i++) arr.push(randomKey());
-            return arr;
-        }
-
-        function displayChallenge() {
-            const keysContainer = document.getElementById('challenge-keys');
-            keysContainer.innerHTML = '';
-            requiredKeys.forEach((k, idx) => {
-                const span = document.createElement('span');
-                span.className = 'challenge-key';
-                span.textContent = k.toUpperCase();
-                if (idx < currentKeyIndex) {
-                    span.style.opacity = '0.45'; // already done
-                    span.style.textDecoration = 'line-through';
-                } else if (idx === currentKeyIndex) {
-                    span.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.12)';
-                }
-                keysContainer.appendChild(span);
-            });
-        }
-
-        function beginKeyboardChallenge() {
-            clearKeyTimer();
-            // difficulty: small sequences & small time limits, configurable
-            const seqLength = 3; // could scale with failures
-            requiredKeys = generateKeySequence(seqLength);
-            currentKeyIndex = 0;
-            perKeyTimeLimit = 2200; // starting time per key (ms)
-            displayChallenge();
-            runPerKeyTimer();
-            updateKeyCountDisplay();
-        }
-
-        function runPerKeyTimer() {
-            clearKeyTimer();
-            const timerEl = document.getElementById('challenge-timer');
-            let remaining = Math.ceil(perKeyTimeLimit / 1000 * 10) / 10; // show in seconds (one decimal)
-            timerEl.textContent = remaining + 's';
-            const startedAt = Date.now();
-
-            countdownInterval = setInterval(() => {
-                const elapsed = Date.now() - startedAt;
-                const remMs = perKeyTimeLimit - elapsed;
-                if (remMs <= 0) {
-                    timerEl.textContent = '0.0s';
-                    clearKeyTimer();
-                    // failed this key -> intensify alarm and regenerate (or move on)
-                    increaseAlarmIntensity();
-                    // if intensity increased a lot, make it harder by reducing perKeyTimeLimit slightly
-                    perKeyTimeLimit = Math.max(700, perKeyTimeLimit - 120);
-                    // give a new sequence after a brief pause
-                    setTimeout(() => { beginKeyboardChallenge(); }, 600);
-                    return;
-                }
-                timerEl.textContent = (remMs / 1000).toFixed(1) + 's';
-            }, 80);
-
-            // safety fallback: set explicit timeout too
-            keyTimer = setTimeout(() => {
-                // time's up handled above in interval block
-            }, perKeyTimeLimit + 50);
-        }
-
-        function clearKeyTimer() {
-            if (keyTimer) { clearTimeout(keyTimer); keyTimer = null; }
-            if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
-            const timerEl = document.getElementById('challenge-timer');
-            if (timerEl) timerEl.textContent = '';
-        }
-
-        function updateKeyCountDisplay() {
-            document.getElementById('key-count').textContent = `${challengeCount} / ${MAX_CHALLENGES_TO_DISMISS} Challenges`;
-        }
-
-        function handleKeyPress(event) {
-            if (!isAlarmRinging || isClapMode) return;
-
-            // If focus on an input (like alarm time), don't count
-            const active = document.activeElement;
-            if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) {
-                return;
-            }
-
-            // Accept the keyboard char (normalize)
-            const pressed = event.key.toLowerCase();
-
-            // Prevent space default scroll
-            if (event.code === 'Space') event.preventDefault();
-
-            // If user presses the expected key:
-            if (requiredKeys.length && pressed === requiredKeys[currentKeyIndex]) {
-                // progress
-                currentKeyIndex++;
-                displayChallenge();
-                // quick positive feedback
-                const statusEl = document.getElementById('ringing-status');
-                if (statusEl) statusEl.textContent = `Good! ${requiredKeys.length - currentKeyIndex} left...`;
-
-                // restart per-key timer for next key (if any)
-                clearKeyTimer();
-                if (currentKeyIndex >= requiredKeys.length) {
-                    // Completed sequence successfully
-                    challengeCount++;
-                    // reduce alarm intensity as reward
-                    alarmBeepInterval = Math.min(500, alarmBeepInterval + 60); // slow down slightly (can't exceed 500 here)
-                    alarmFrequency = Math.max(440, alarmFrequency - 60); // reduce pitch slightly
-                    if (!isMute && isAlarmRinging) {
-                        stopAlarmSound();
-                        playAlarmSound();
-                    }
-                    updateKeyCountDisplay();
-
-                    // If sufficient successful challenges, dismiss alarm
-                    if (challengeCount >= MAX_CHALLENGES_TO_DISMISS) {
-                        stopAlarm();
-                        return;
-                    } else {
-                        // otherwise generate next challenge, slightly decrease timeLimit to be harder
-                        perKeyTimeLimit = Math.max(800, perKeyTimeLimit - 120);
-                        setTimeout(() => { beginKeyboardChallenge(); }, 350);
-                        return;
-                    }
-                } else {
-                    // still keys remaining: run timer for next key
-                    runPerKeyTimer();
-                }
-            } else {
-                // wrong key -> penalize slightly: intensify alarm
-                increaseAlarmIntensity();
-                // small bounce visual feedback
-                const statusEl = document.getElementById('ringing-status');
-                if (statusEl) {
-                    statusEl.textContent = `Wrong key! Hit "${requiredKeys[currentKeyIndex].toUpperCase()}" next. Alarm intensifying...`;
-                }
-                // optionally regenerate sequence to avoid brute forcing
-                setTimeout(() => { beginKeyboardChallenge(); }, 600);
-            }
-            lastKeyPressTime = Date.now();
-        }
-
-        // --- Buttons & UI hooks (kept from original, with slight adjustments) ---
-        document.getElementById('set-alarm-btn').onclick = function() {
-            const timeInput = document.getElementById('alarm-time').value;
-            if (timeInput) {
-                alarmTime = timeInput;
-                isAlarmSet = true;
-                document.getElementById('alarm-set-message').textContent = 'Alarm set for: ' + alarmTime;
-                document.getElementById('status-message').textContent = 'Alarm set for ' + alarmTime;
-                document.getElementById('set-alarm-btn').disabled = true;
-                document.getElementById('clear-alarm-btn').style.display = '';
-            }
-        };
-
-        document.getElementById('clear-alarm-btn').onclick = function() {
-            isAlarmSet = false;
-            alarmTime = '';
-            document.getElementById('alarm-time').value = '';
-            document.getElementById('alarm-set-message').textContent = 'Set an alarm to wake up';
-            document.getElementById('status-message').textContent = 'Alarm cleared.';
-            document.getElementById('set-alarm-btn').disabled = false;
-            document.getElementById('clear-alarm-btn').style.display = 'none';
-        };
-
-        document.getElementById('mute-btn').onclick = function() {
-            isMute = !isMute;
-            this.textContent = isMute ? 'Unmute' : 'Mute';
-            if (isMute) {
-                stopAlarmSound();
-            } else if (isAlarmRinging) {
-                playAlarmSound();
-            }
-        };
-
-        document.getElementById('manual-clap-btn').onclick = function() {
-            if (isAlarmRinging) {
-                if (isClapMode) {
-                    clapCount++;
-                    document.getElementById('clap-count').textContent = clapCount + ' / 10 Claps';
-                    const statusEl = document.getElementById('ringing-status');
-                    if (statusEl) statusEl.textContent = 'Manual clap registered! ' + (10 - clapCount) + ' more to go!';
-                    const clapCountEl = document.getElementById('clap-count');
-                    clapCountEl.style.color = '#10b981';
-                    setTimeout(() => { clapCountEl.style.color = '#6366f1'; }, 200);
-                    if (clapCount >= 10) stopAlarm();
-                } else {
-                    // manual success for keyboard mode = act like correct key pressed
-                    currentKeyIndex++;
-                    displayChallenge();
-                    if (currentKeyIndex >= requiredKeys.length) {
-                        challengeCount++;
-                        updateKeyCountDisplay();
-                        if (challengeCount >= MAX_CHALLENGES_TO_DISMISS) stopAlarm();
-                        else beginKeyboardChallenge();
-                    }
-                }
-            }
-        };
-
-        document.getElementById('switch-mode-btn').onclick = function() {
-            if (isAlarmRinging) {
-                if (isClapMode) switchToKeyboardMode();
-                else switchToClapMode();
-            }
-        };
-
-        document.getElementById('stop-alarm-btn').onclick = function() {
-            if (isAlarmRinging) stopAlarm();
-        };
-
-        // start update loop
-        setInterval(updateTime, 1000);
-        updateTime();
-
-    </script>
+    // Theme toggle button (manual override)
+    themeBtn.onclick = () => {
+      document.body.classList.toggle('light');
+    };
+  </script>
 </body>
 </html>
