@@ -112,13 +112,13 @@ UX Add-ons: Motivational quotes on stop, input validations, responsive layout.
 
 
 # Screenshots (Add at least 3)
-![set Alarm.jpeg]
+![set Alarm](https://github.com/user-attachments/assets/8b2e0209-0e6e-4670-b055-382724ba3cc9)
 this is a page which display set alarm page
 
-![Alaram Ringing.jpeg]
+![set Alarm](https://github.com/user-attachments/assets/91910aff-f7a7-4580-adec-003c9f583671)
 this page will display Alarm ringing
 
-![Clap detection.jpeg]
+![set Alarm](https://github.com/user-attachments/assets/9d91ddd8-49b2-492f-8e07-09b044bbd44a)
 this page is the final page which will detect the clap using microphone or you just need to press the random keys displayed on the screen
 
 # Diagrams
