@@ -59,13 +59,37 @@ Device: Any browser-supported device with mic access
 
 
 
-### Implementation
-For Software:
-# Installation
-[commands]
 
-# Run
-[commands]
+
+
+
+
+
+
+🖥️ For Software:
+🔧 Installation
+No installation needed – it’s a web app!
+
+Or if running locally:
+
+bash
+Copy
+Edit
+# Clone the repo
+git clone https://github.com/yourusername/wakeupwarrior.git
+
+# Navigate to the folder
+cd wakeupwarrior
+▶️ Run
+Just open the HTML file in a browser:
+
+bash
+Copy
+Edit
+# From the project folder
+open index.html
+Or simply drag and drop index.html into a browser.
+
 
 ### Project Documentation
 For Software:
