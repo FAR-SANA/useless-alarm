@@ -112,14 +112,14 @@ UX Add-ons: Motivational quotes on stop, input validations, responsive layout.
 
 
 # Screenshots (Add at least 3)
-![Screenshot1](Add screenshot 1 here with proper name)
-*Add caption explaining what this shows*
+![set Alarm.jpeg]
+this is a page which display set alarm page
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+![Alaram Ringing.jpeg]
+this page will display Alarm ringing
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
+![Clap detection.jpeg]
+this page is the final page which will detect the clap using microphone or you just need to press the random keys displayed on the screen
 
 # Diagrams
 ![Workflow](Add your workflow/architecture diagram here)
