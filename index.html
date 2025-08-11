@@ -1,57 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WakeUpWarrior Alarm</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: black;
-      --text: #ff1a1a;
-      --input-border: #ff4444;
-      --button-text: #ff4444;
-    }
-    body.light {
-      --bg: #f0f0f0; --text: #222; --input-border: #444; --button-text: #222;
-    }
-    html,body {
-      margin:0; padding:0; height:100%; overflow:hidden;
-      font-family:'Share Tech Mono',monospace;
-      background-color:var(--bg); color:var(--text);
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
-      transition:background-color 0.3s,color 0.3s;
-    }
-    #logo-header { position:absolute; top:10px; left:10px; display:flex; align-items:center; }
-    #logo{width:40px;height:40px; background:url('https://via.placeholder.com/40') no-repeat center/contain; margin-right:8px;}
-    #appName { font-size:1.3rem; font-weight:bold; }
-    #themeBtn{position:absolute; top:10px; right:10px; padding:5px 8px;font-size:1rem;
-             border:2px solid var(--input-border); background:transparent; color:var(--button-text); cursor:pointer;}
-    #clock{font-size:12vw; letter-spacing:.15em; font-weight:bold; text-align:center;}
-    .controls{margin-top:20px; font-size:1.5rem;}
-    input[type="time"]{
-      font-size:1.2rem; padding:6px; border:2px solid var(--input-border);
-      border-radius:4px; background:var(--bg); color:var(--button-text);
-    }
-    #stopInfo{margin-top:15px; font-size:1rem; text-align:center;}
-    #clapCountDisplay { margin-top: 10px; font-size: 1.2rem; }
-    button {
-      margin: 10px 5px 0 5px;
-      padding: 8px 14px;
-      font-size: 1.1rem;
-      border: 2px solid var(--input-border);
-      border-radius: 5px;
-      background: transparent;
-      color: var(--button-text);
-      cursor: pointer;
-      font-family: 'Share Tech Mono', monospace;
-      user-select: none;
-    }
-    button:hover {
-      background-color: var(--input-border);
-      color: var(--bg);
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>WakeUpWarrior Alarm</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: black;
+    --text: #ff1a1a;
+    --input-border: #ff4444;
+    --button-text: #ff4444;
+  }
+  body.light {
+    --bg: #f0f0f0; --text: #222; --input-border: #444; --button-text: #222;
+  }
+  html,body {
+    margin:0; padding:0; height:100%; overflow:hidden;
+    font-family:'Share Tech Mono',monospace;
+    background-color:var(--bg); color:var(--text);
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    transition:background-color 0.3s,color 0.3s;
+  }
+  #logo-header { position:absolute; top:10px; left:10px; display:flex; align-items:center; }
+  #logo{width:40px;height:40px; background:url('https://via.placeholder.com/40') no-repeat center/contain; margin-right:8px;}
+  #appName { font-size:1.3rem; font-weight:bold; }
+  #themeBtn{position:absolute; top:10px; right:10px; padding:5px 8px;font-size:1rem;
+           border:2px solid var(--input-border); background:transparent; color:var(--button-text); cursor:pointer;}
+  #clock{font-size:12vw; letter-spacing:.15em; font-weight:bold; text-align:center;}
+  .controls{margin-top:20px; font-size:1.5rem;}
+  input[type="time"]{
+    font-size:1.2rem; padding:6px; border:2px solid var(--input-border);
+    border-radius:4px; background:var(--bg); color:var(--button-text);
+  }
+  #stopInfo{margin-top:15px; font-size:1rem; text-align:center;}
+  #clapCountDisplay { margin-top: 10px; font-size: 1.2rem; }
+  button {
+    margin: 10px 5px 0 5px;
+    padding: 8px 14px;
+    font-size: 1.1rem;
+    border: 2px solid var(--input-border);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--button-text);
+    cursor: pointer;
+    font-family: 'Share Tech Mono', monospace;
+    user-select: none;
+  }
+  button:hover {
+    background-color: var(--input-border);
+    color: var(--bg);
+  }
+  /* Mobile Responsive */
+  @media (max-width: 600px) {
+    #clock { font-size: 18vw; }
+    .controls { font-size: 1rem; }
+    input[type="time"] { width: 90%; font-size: 1rem; }
+    button { font-size: 1rem; padding: 6px 10px; }
+    #stopInfo { font-size: 0.9rem; }
+  }
+</style>
 </head>
 <body>
   <div id="logo-header"><div id="logo"></div><div id="appName">WakeUpWarrior</div></div>
@@ -69,236 +78,201 @@
   </div>
   <div id="clapCountDisplay">Claps: 0</div>
 
-  <script>
-    const clockEl = document.getElementById('clock');
-    const alarmInput = document.getElementById('alarmTime');
-    const keysNeeded = document.getElementById('keysNeeded');
-    const themeBtn = document.getElementById('themeBtn');
-    const useClapBtn = document.getElementById('useClap');
-    const useKeysBtn = document.getElementById('useKeys');
-    const clapCountDisplay = document.getElementById('clapCountDisplay');
+  <!-- Hidden input for mobile keyboard -->
+  <input type="text" id="hiddenInput" style="position:absolute;opacity:0;height:0;width:0;border:none;" />
 
-    let alarmTime = null, ringing = false;
-    let clapCount = 0, clapGoal = 10;
-    let stopKeys = [], keyGoal = 4;
-    let keyTimer = null, freqRampTimeout = null;
-    let audioCtx = null, oscillator = null;
-    let useClap = true;
-    let volume = 0.1;
+<script>
+const clockEl = document.getElementById('clock');
+const alarmInput = document.getElementById('alarmTime');
+const keysNeeded = document.getElementById('keysNeeded');
+const themeBtn = document.getElementById('themeBtn');
+const useClapBtn = document.getElementById('useClap');
+const useKeysBtn = document.getElementById('useKeys');
+const clapCountDisplay = document.getElementById('clapCountDisplay');
+const hiddenInput = document.getElementById('hiddenInput');
 
-    // Update clock and theme based on time
-    function updateTime() {
-      const now = new Date();
-      const h = now.getHours().toString().padStart(2,'0');
-      const m = now.getMinutes().toString().padStart(2,'0');
-      const s = now.getSeconds().toString().padStart(2,'0');
-      clockEl.textContent = `${h}:${m}:${s}`;
+let alarmTime = null, ringing = false;
+let clapCount = 0, clapGoal = 10;
+let stopKeys = [], keyGoal = 4;
+let keyTimer = null, freqRampTimeout = null;
+let audioCtx = null, oscillator = null;
+let useClap = true;
+let clapThreshold = 80; // more sensitive for mobile
 
-      // Auto theme based on hour
-      if (h >= 7 && h < 19) {
-        if (!document.body.classList.contains('light')) document.body.classList.add('light');
-      } else {
-        if (document.body.classList.contains('light')) document.body.classList.remove('light');
-      }
+function updateTime() {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  const s = now.getSeconds().toString().padStart(2,'0');
+  clockEl.textContent = `${h}:${m}:${s}`;
+  if (h >= 7 && h < 19) document.body.classList.add('light');
+  else document.body.classList.remove('light');
+  if (alarmTime === `${h}:${m}` && !ringing) startAlarm();
+}
+setInterval(updateTime, 1000);
+updateTime();
 
-      if (alarmTime === `${h}:${m}` && !ringing) startAlarm();
-    }
-    setInterval(updateTime, 1000);
-    updateTime();
+alarmInput.addEventListener('input', () => {
+  alarmTime = alarmInput.value;
+  if (alarmTime) alert(`Alarm set for ${alarmTime}`);
+});
 
-    alarmInput.addEventListener('input', () => {
-      alarmTime = alarmInput.value;
-      if (alarmTime) alert(`Alarm set for ${alarmTime}`);
-    });
+useClapBtn.onclick = () => { useClap = true; alert('You selected: Clap to stop alarm'); resetStopInfo(); };
+useKeysBtn.onclick = () => { useClap = false; alert('You selected: Keyboard to stop alarm'); resetStopInfo(); };
 
-    useClapBtn.onclick = () => {
-      useClap = true;
-      alert('You selected: Clap to stop alarm');
-      resetStopInfo();
-    };
+function resetStopInfo() {
+  clapCount = 0;
+  updateClapCount();
+  if (useClap) {
+    document.getElementById('stopInfo').firstChild.textContent = `Clap ${clapGoal} times to stop alarm.`;
+    keysNeeded.textContent = 'N/A';
+  } else {
+    keysNeeded.textContent = '---';
+  }
+}
 
-    useKeysBtn.onclick = () => {
-      useClap = false;
-      alert('You selected: Keyboard to stop alarm');
-      resetStopInfo();
-    };
+function startAlarm() {
+  ringing = true;
+  clapCount = 0;
+  generateKeys();
+  updateClapCount();
+  updateStatus();
+  startAlarmSound();
+  if (useClap) setupClapDetection(); else stopClapDetection();
+  if (!useClap) {
+    setupKeyDetection();
+  } else {
+    stopKeyDetection();
+  }
+}
 
-    function startAlarm() {
-      ringing = true;
-      clapCount = 0;
-      volume = 0.1;
-      generateKeys();
-      updateClapCount();
-      updateStatus();
-      startAlarmSound();
-      if(useClap) setupClapDetection();
-      else stopClapDetection();
-      if (!useClap) setupKeyDetection();
-      else stopKeyDetection();
-    }
+function stopAlarm() {
+  ringing = false;
+  stopAlarmSound();
+  clearInterval(keyTimer);
+  clearTimeout(freqRampTimeout);
+  keysNeeded.textContent = '---';
+  updateClapCount();
+  stopClapDetection();
+  stopKeyDetection();
+  const quotes = [
+    "Wake up! The early bird might get the worm, but the second mouse gets the cheese!",
+    "You can't snooze forever — eventually, the universe calls.",
+    "Rise and shine? More like rise and whine!",
+    "Sleep is overrated… said no one ever.",
+    "If you’re reading this, you’re awake. Congratulations!",
+    "Good morning! Time to pretend you’re a functioning adult.",
+    "Alarm clocks: Because reality won’t wait for you to be ready.",
+    "Getting up early is a sign of wisdom… or insanity."
+  ];
+  alert(`Alarm stopped! Now get up!\n\n💡 Here's a quote for you:\n${quotes[Math.floor(Math.random() * quotes.length)]}`);
+}
 
-    function stopAlarm() {
-      ringing = false;
-      stopAlarmSound();
-      clearInterval(keyTimer);
-      clearTimeout(freqRampTimeout);
-      keysNeeded.textContent = '---';
-      updateClapCount();
-      stopClapDetection();
-      stopKeyDetection();
+function updateClapCount() { clapCountDisplay.textContent = `Claps: ${clapCount}`; }
 
-      const quotes = [
-        "Wake up! The early bird might get the worm, but the second mouse gets the cheese!",
-        "You can't snooze forever — eventually, the universe calls.",
-        "Rise and shine? More like rise and whine!",
-        "Sleep is overrated… said no one ever.",
-        "If you’re reading this, you’re awake. Congratulations!",
-        "Good morning! Time to pretend you’re a functioning adult.",
-        "Alarm clocks: Because reality won’t wait for you to be ready.",
-        "Getting up early is a sign of wisdom… or insanity."
-      ];
-      const quote = quotes[Math.floor(Math.random() * quotes.length)];
-      alert(`Alarm stopped! Now get up!\n\n💡 Here's a quote for you:\n${quote}`);
-    }
+function generateKeys() {
+  const pool = 'asdfjklghzxcvb';
+  stopKeys = [];
+  while (stopKeys.length < keyGoal) {
+    const k = pool[Math.floor(Math.random() * pool.length)];
+    if (!stopKeys.includes(k)) stopKeys.push(k);
+  }
+  updateStatus();
+  if (keyTimer) clearInterval(keyTimer);
+  keyTimer = setInterval(generateKeys, 5000);
+}
 
-    function updateClapCount() {
-      clapCountDisplay.textContent = `Claps: ${clapCount}`;
-    }
+function updateStatus() {
+  if (useClap) {
+    document.getElementById('stopInfo').firstChild.textContent = `Clap ${clapGoal - clapCount} more times to stop alarm.`;
+    keysNeeded.textContent = 'N/A';
+  } else {
+    document.getElementById('stopInfo').firstChild.textContent = 'Type letters to stop alarm: ';
+    keysNeeded.textContent = stopKeys.join(', ');
+  }
+}
 
-    function generateKeys() {
-      const pool = 'asdfjklghzxcvb';
-      stopKeys = [];
-      while (stopKeys.length < keyGoal) {
-        const k = pool[Math.floor(Math.random() * pool.length)];
-        if (!stopKeys.includes(k)) stopKeys.push(k);
-      }
-      updateStatus();
-      if (keyTimer) clearInterval(keyTimer);
-      keyTimer = setInterval(generateKeys, 5000);
-    }
+// Clap detection
+let micStream = null, audioContext = null, analyser = null, dataArray = null, clapDetectionRunning = false;
+async function setupClapDetection() {
+  if (clapDetectionRunning) return;
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const mic = audioContext.createMediaStreamSource(micStream);
+    analyser = audioContext.createAnalyser();
+    mic.connect(analyser);
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    clapDetectionRunning = true;
+    detectClap();
+  } catch {
+    alert('Microphone access denied or not available.');
+    useClap = false;
+    updateStatus();
+    stopClapDetection();
+  }
+}
+function stopClapDetection() {
+  clapDetectionRunning = false;
+  if (micStream) { micStream.getTracks().forEach(track => track.stop()); micStream = null; }
+  if (audioContext) { audioContext.close(); audioContext = null; }
+}
+function detectClap() {
+  if (!clapDetectionRunning) return;
+  analyser.getByteFrequencyData(dataArray);
+  let avg = dataArray.reduce((a,b) => a+b, 0) / dataArray.length;
+  if (avg > clapThreshold && ringing) {
+    clapCount++;
+    updateClapCount();
+    checkStop();
+  }
+  requestAnimationFrame(detectClap);
+}
 
-    function updateStatus() {
-      if (useClap) {
-        document.getElementById('stopInfo').firstChild.textContent = `Clap ${clapGoal - clapCount} more times to stop alarm.`;
-        keysNeeded.textContent = 'N/A';
-      } else {
-        document.getElementById('stopInfo').firstChild.textContent = 'Type letters to stop alarm: ';
-        keysNeeded.textContent = stopKeys.join(', ');
-      }
-    }
+// Keyboard detection
+function setupKeyDetection() {
+  hiddenInput.focus(); // mobile keyboard trigger
+  document.addEventListener('keydown', keyDownHandler);
+}
+function stopKeyDetection() { document.removeEventListener('keydown', keyDownHandler); }
+function keyDownHandler(e) {
+  if (!ringing || useClap) return;
+  const idx = stopKeys.indexOf(e.key);
+  if (idx > -1) {
+    stopKeys.splice(idx, 1);
+    updateStatus();
+    checkStop();
+  }
+}
 
-    // Clap detection
-    let micStream = null;
-    let audioContext = null;
-    let analyser = null;
-    let dataArray = null;
-    let clapDetectionRunning = false;
+// Alarm sound
+let freq = 440, freqIncrement = 20, maxFreq = 2000;
+function startAlarmSound() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  oscillator = audioCtx.createOscillator();
+  oscillator.type = 'square';
+  oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+  oscillator.connect(audioCtx.destination);
+  oscillator.start();
+  rampFrequency();
+}
+function rampFrequency() {
+  if (!ringing) return;
+  freq += freqIncrement;
+  if (freq > maxFreq) freq = 440;
+  oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+  freqRampTimeout = setTimeout(rampFrequency, 2000);
+}
+function stopAlarmSound() {
+  if (oscillator) { oscillator.stop(); oscillator.disconnect(); oscillator = null; }
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+}
+function checkStop() {
+  if (useClap && clapCount >= clapGoal) stopAlarm();
+  if (!useClap && stopKeys.length === 0) stopAlarm();
+}
 
-    async function setupClapDetection() {
-      if (clapDetectionRunning) return;
-      try {
-        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const mic = audioContext.createMediaStreamSource(micStream);
-        analyser = audioContext.createAnalyser();
-        mic.connect(analyser);
-        dataArray = new Uint8Array(analyser.frequencyBinCount);
-        clapDetectionRunning = true;
-        detectClap();
-      } catch (e) {
-        alert('Microphone access denied or not available.');
-        useClap = false;
-        updateStatus();
-        stopClapDetection();
-      }
-    }
-
-    function stopClapDetection() {
-      clapDetectionRunning = false;
-      if (micStream) {
-        micStream.getTracks().forEach(track => track.stop());
-        micStream = null;
-      }
-      if (audioContext) {
-        audioContext.close();
-        audioContext = null;
-      }
-    }
-
-    function detectClap() {
-      if (!clapDetectionRunning) return;
-      analyser.getByteFrequencyData(dataArray);
-      let avg = dataArray.reduce((a,b) => a+b, 0) / dataArray.length;
-      if (avg > 90 && ringing) {
-        clapCount++;
-        updateClapCount();
-        checkStop();
-      }
-      requestAnimationFrame(detectClap);
-    }
-
-    // Keyboard detection
-    function setupKeyDetection() {
-      document.addEventListener('keydown', keyDownHandler);
-    }
-    function stopKeyDetection() {
-      document.removeEventListener('keydown', keyDownHandler);
-    }
-    function keyDownHandler(e) {
-      if (!ringing || useClap) return;
-      const idx = stopKeys.indexOf(e.key);
-      if (idx > -1) {
-        stopKeys.splice(idx, 1);
-        updateStatus();
-        checkStop();
-      }
-    }
-
-    // Alarm sound with rising frequency
-    let freq = 440;
-    let freqIncrement = 20;
-    let maxFreq = 2000;
-
-    function startAlarmSound() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      oscillator = audioCtx.createOscillator();
-      oscillator.type = 'square';
-      oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      oscillator.connect(audioCtx.destination);
-      oscillator.start();
-      volume = 0.1;
-      rampFrequency();
-    }
-
-    function rampFrequency() {
-      if (!ringing) return;
-      freq += freqIncrement;
-      if (freq > maxFreq) freq = 440;
-      oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      freqRampTimeout = setTimeout(rampFrequency, 2000);
-    }
-
-    function stopAlarmSound() {
-      if (oscillator) {
-        oscillator.stop();
-        oscillator.disconnect();
-        oscillator = null;
-      }
-      if (audioCtx) {
-        audioCtx.close();
-        audioCtx = null;
-      }
-    }
-
-    function checkStop() {
-      if (useClap && clapCount >= clapGoal) stopAlarm();
-      if (!useClap && stopKeys.length === 0) stopAlarm();
-    }
-
-    // Theme toggle button (manual override)
-    themeBtn.onclick = () => {
-      document.body.classList.toggle('light');
-    };
-  </script>
+themeBtn.onclick = () => document.body.classList.toggle('light');
+</script>
 </body>
 </html>
